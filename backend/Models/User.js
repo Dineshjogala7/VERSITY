@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
-    username:{
+    userName:{
         type:String,
         required:true
     },
@@ -15,7 +15,12 @@ const userSchema = new mongoose.Schema({
         required:true,
     },
     profileImage :{
-        type:String
+        type:String,
+        required :true
+    },
+    profileImagePublicId:{
+        type:String,
+        required :true
     },
     totalRevenue:{
         type:Number,
