@@ -5,11 +5,11 @@ dotenv.config()
 
 const cors = require('cors')
 const app = express()
-
+const userRoutes = require('./Routes/User');
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
-
+app.use('/cred',userRoutes);
 mongoConnect(process.env.MONGO_URL).then(()=>{
     console.log("connection successfull!!");
 }).catch((err)=>{
