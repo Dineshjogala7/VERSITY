@@ -21,7 +21,12 @@ const courseSchema = new mongoose.Schema({
     },
     videos :[{type:String}],
     pdfs : [{type:String}],
-    articles : [{type:String}],
+    articles: [
+        {
+            title: { type: String, required: true },
+            content: { type: String, required: true } // can store HTML or markdown
+        }
+    ],
     thumbnail : {type:String },
     totalStudentsEnrolled : {
         type:Number,
