@@ -13,11 +13,12 @@ const enrollmentSchema = new mongoose.Schema({
     },
     paymentStatus : {
         type:String,
-        enume: ['pending','completed','failed'],
+        enum: ['pending','completed','failed'],
         default : 'completed'
     },
     paymentId: {
-        type:String
+        type:String,
+        default : "1234567"
     },
     liked :{
         type : Boolean,
