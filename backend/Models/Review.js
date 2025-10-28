@@ -12,9 +12,12 @@ const reviewSchema  = new mongoose.Schema({
         required: true
     },
     rating : {
-        type : Number, min:1 , max : 5 , required :true
+        type :Number,
+        default:null
     },
-    comment: {type : String}
+    comment: {type : String,
+        default : ""
+    }
 },{timestamps :true});
 
 module.exports = mongoose.model("Review",reviewSchema);
