@@ -37,9 +37,11 @@ const userSchema = new mongoose.Schema({
     streak:{
         currentStreak : {
             type : Number,
-            default:0
+            default:1
         },
-        lastVisited: {type:Date},
+        lastVisited: {type:Date,
+            default : Date.now()
+        },
 
     }
 },{timestamps:true})
