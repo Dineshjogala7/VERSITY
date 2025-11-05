@@ -1,12 +1,21 @@
-import { BookOpen, Users, Star, Calendar, Tag, FileText, Video, Download, ChevronRight } from "lucide-react";
+import { BookOpen, Users, Star, Calendar, Tag, FileText, Video, Download, ChevronRight,Loader2 } from "lucide-react";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
 import { useParams } from "react-router-dom";
 import { useCourse } from "../CourseContext/CourseContext";
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Course = () => {
   const { courseid } = useParams();
   const { enrolledData } = useCourse();
   const enrollmentData = enrolledData.find((data) => data.courseid._id === courseid);
-  
+  const [review , setReview] = useState("");
+  const [star , setStar] = useState(5);
+  const [getReview , setGetReview] = useState([]);
+  const [loading , setLoading] = useState(false)
   if (!enrollmentData) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -42,7 +51,47 @@ const Course = () => {
       year: "numeric",
     });
   };
+  const handleGetReview = async()=>{
+    try {
+      setLoading(true);
+      const result = await axios.get(`${import.meta.env.VITE_API_URL}review/getreview/${courseid}`,{
+        headers:{
+          'Authorization':`Bearer ${localStorage.getItem('token')}`
+        }
+      })
+    setGetReview(result.data.reviews)
+    } catch (error) {
+      toast.error("error in getting the messages");
+    }
+    finally{
+      setLoading(false)
+    }
+  }
+  const handleReview = async()=>{
+    try {
+      if (!review || !star)  alert("must provide both rating and review")
+      else{
+        const result = await axios.post(
+            `${import.meta.env.VITE_API_URL}review/postreview/${courseid}`,
+            {
+              rating: star,
+              msg: review,
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          toast.success("review submitted successfully!");
+      }
+      setReview('')
 
+    } catch (error) {
+      toast.error("error in submitting!!")
+    }
+  }
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Hero Section */}
@@ -284,18 +333,80 @@ const Course = () => {
               </div>
 
               <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
-                <button 
-                  className={`w-full font-semibold py-3 rounded-lg transition-all duration-300 ${
-                    liked 
-                      ? 'bg-red-500 hover:bg-red-600 text-white' 
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
-                  }`}
+                <div className="flex gap-2 mb-3">
+        {[1, 2, 3, 4, 5].map((s) => (
+          <Star
+            key={s}
+            size={28}
+            className={`cursor-pointer transition-colors duration-200 ${
+              s <= star ? "text-yellow-400" : "text-gray-300"
+            }`}
+            onClick={() => setStar(s)}
+          />
+        ))}
+      </div>
+
+      {/* Review Input */}
+      <textarea
+        value={review}
+        onChange={(e) => setReview(e.target.value)}
+        placeholder="Write your review..."
+        className="w-full border rounded-lg p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+        rows={4}
+      />
+
+      {/* Submit Button */}
+      <button
+        onClick={handleReview}
+        className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-3 rounded-lg mt-4 transition-all duration-300"
+      >
+        Submit a Review
+      </button>
+        <Accordion type="single" collapsible className="w-full" onClick={handleGetReview}>
+      <AccordionItem value="reviews">
+        <AccordionTrigger className="text-lg font-semibold">
+          Reviews
+        </AccordionTrigger>
+        <AccordionContent>
+          {loading ? (
+            <div className="flex items-center justify-center gap-2 py-4 text-gray-500">
+              <Loader2 className="w-4 h-4 animate-spin" /> Getting the comments...
+            </div>
+          ) : getReview.length === 0 ? (
+            <div className="text-gray-500 text-sm py-3">No reviews yet.</div>
+          ) : (
+            <div className="flex flex-col gap-4 py-2">
+              {getReview.map((reviews) => (
+                <div
+                  key={reviews._id}
+                  className="flex items-start gap-3 border rounded-xl p-3 shadow-sm"
                 >
-                  {liked ? '❤️ Liked' : '🤍 Add to Favorites'}
-                </button>
-                <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 rounded-lg transition-all duration-300">
-                  Share this course
-                </button>
+                  <Avatar>
+                    <AvatarImage src={reviews.userid?.profileImage} />
+                    <AvatarFallback>
+                      {reviews.userid?.userName?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold">
+                      {reviews.userid?.userName || "Unknown User"}
+                    </p>
+                    <p className="text-sm text-gray-700">{reviews.comment}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(reviews.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+
+
+        
+
               </div>
             </div>
           </div>

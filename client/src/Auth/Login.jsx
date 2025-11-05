@@ -1,14 +1,16 @@
+
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../AuthContext/AuthContext";
+import { Mail, Lock, LogIn, UserPlus } from "lucide-react";
 
 const Login = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { setUserData } = useAuth();
+    const { setUserData, setStreak } = useAuth();
 
     const handleFieldData = (e) => {
         const { name, value } = e.target;
@@ -23,14 +25,13 @@ const Login = () => {
             setLoading(true);
             e.preventDefault();
             
-            // ✅ Changed loginData to formData
             if (!formData.email || !formData.password) {
                 return toast.error("Email and password are required!!");
             }
             
             const result = await axios.post(
                 `${import.meta.env.VITE_API_URL}cred/login`,
-                formData  // ✅ Changed loginData to formData
+                formData
             );
             
             // Store token and basic info
@@ -42,8 +43,9 @@ const Login = () => {
             setUserData(result.data.user);
             
             console.log(result.data);
-            navigate("/");
+            
             toast.success(result.data.message);
+            navigate("/");
         } catch (error) {
             console.log(error);
             toast.error(error.response?.data?.message || error.message);
@@ -53,66 +55,100 @@ const Login = () => {
     };
    
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-[#e3d8cb] font-serif">
-            <div className="w-full max-w-md bg-white/90 shadow-lg rounded-2xl p-8 border border-[#46211A]/20">
-                <h1 className="text-center text-3xl font-semibold text-[#46211A] mb-6">
-                    Login
-                </h1>
-                <div className="space-y-4">
-                    <div className="flex flex-col gap-1">
-                        <label
-                            htmlFor="email"
-                            className="text-[#46211A] text-sm font-medium"
-                        >
-                            Email
-                        </label>
-                        <input
-                            type="text"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleFieldData}
-                            className="rounded-md py-2 px-3 border border-[#46211A]/30 focus:outline-none focus:border-[#A43820]"
-                            placeholder="abc@gmail.com"
-                        />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <label
-                            htmlFor="password"
-                            className="text-[#46211A] text-sm font-medium"
-                        >
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleFieldData}
-                            className="rounded-md py-2 px-3 border border-[#46211A]/30 focus:outline-none focus:border-[#A43820]"
-                            placeholder="xyz@1234"
-                        />
+        <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-zinc-900 p-4">
+            <div className="w-full max-w-md">
+                {/* Header */}
+                <div className="mb-8 text-center">
+                    <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-300 mb-2 tracking-tight uppercase">
+                        LOGIN
+                    </h1>
+                    <div className="w-24 h-1 bg-yellow-400 mx-auto"></div>
+                    <p className="text-gray-400 mt-4 font-bold uppercase tracking-wider text-sm">
+                        Access Your Account
+                    </p>
+                </div>
+
+                {/* Login Card */}
+                <div className="bg-zinc-900 border-2 border-slate-700 overflow-hidden">
+                    <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 p-1">
+                        <div className="bg-zinc-900 p-8">
+                            <div className="space-y-6">
+                                {/* Email Field */}
+                                <div className="flex flex-col gap-2">
+                                    <label
+                                        htmlFor="email"
+                                        className="text-gray-300 text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                                    >
+                                        <Mail className="w-4 h-4 text-yellow-400" strokeWidth={2.5} />
+                                        Email Address
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleFieldData}
+                                        className="bg-slate-800 text-white py-3 px-4 border-2 border-slate-700 focus:outline-none focus:border-yellow-400 transition-colors font-semibold"
+                                        placeholder="your@email.com"
+                                    />
+                                </div>
+
+                                {/* Password Field */}
+                                <div className="flex flex-col gap-2">
+                                    <label
+                                        htmlFor="password"
+                                        className="text-gray-300 text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                                    >
+                                        <Lock className="w-4 h-4 text-yellow-400" strokeWidth={2.5} />
+                                        Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleFieldData}
+                                        className="bg-slate-800 text-white py-3 px-4 border-2 border-slate-700 focus:outline-none focus:border-yellow-400 transition-colors font-semibold"
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+                            </div>
+                            
+                            {/* Login Button */}
+                            <button
+                                onClick={handleLogin}
+                                disabled={loading}
+                                className="mt-8 w-full py-4 bg-yellow-400 text-black font-black uppercase tracking-wider hover:bg-yellow-300 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                            >
+                                {loading ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                                        LOGGING IN...
+                                    </>
+                                ) : (
+                                    <>
+                                        <LogIn className="w-5 h-5" strokeWidth={3} />
+                                        LOGIN
+                                    </>
+                                )}
+                            </button>
+
+                            {/* Sign Up Link */}
+                            <div className="mt-6 text-center">
+                                <p className="text-gray-400 text-sm font-semibold">
+                                    Don't have an account?{" "}
+                                    <span 
+                                        className="text-yellow-400 font-black hover:cursor-pointer hover:text-yellow-300 transition-colors uppercase tracking-wide" 
+                                        onClick={() => navigate("/signup")}
+                                    >
+                                        SIGN UP
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <button
-                    onClick={handleLogin}
-                    disabled={loading}
-                    className="mt-6 w-full py-2.5 rounded-lg bg-[#7d2f1e] text-white font-semibold hover:bg-[#46211A] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {loading ? "Logging in..." : "Login"}
-                </button>
-                <p className="mt-4 text-center">
-                    Don't have an account? {" "}
-                    <span 
-                        className="text-[#A43820] font-bold tracking-wider hover:cursor-pointer hover:underline" 
-                        onClick={() => navigate("/signup")}
-                    >
-                        SignUp
-                    </span> 
-                    {" "}here
-                </p>
             </div>
         </div>
     )
 }
 
-export default Login
+export default Login;
