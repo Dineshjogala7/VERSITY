@@ -7,28 +7,33 @@ async function joinCourse(req, res) {
     const userid = req.userid;
     const { courseid } = req.params; 
 
-    if (course?.creator?.equals(userid)) return res.status(400).json({ message: "Course created by you, unable to join" });
-
-
+    // Fetch user and course first
     const user = await User.findById(userid);
     const course = await Course.findById(courseid);
-    if(course.creator === userid) return res.status(400).json({message:"Course created BY You , unable to Join"})
 
-    if (!user || !course)
+    if (!user || !course) 
       return res.status(404).json({ message: "User or Course not found" });
 
-    const enrolledCourse = await (await Enrollment.create({ userid, courseid }))
-  .populate({
-    path: "courseid",
-    populate: { path: "creator", select: "userName" },
-  });
+    // Check if user is the creator
+    if (course.creator.equals(userid)) 
+      return res.status(400).json({ message: "Course created by you, unable to join" });
 
+    // Enroll user
+    const enrolledCourse = await Enrollment.create({ userid, courseid });
+    await enrolledCourse.populate({
+      path: "courseid",
+      populate: { path: "creator", select: "userName" },
+    });
+
+    // Update stats
     user.totalCoursesPurchased += 1;
+    course.totalStudentsEnrolled += 1;
+
     const creator = await User.findById(course.creator);
     creator.totalRevenue += course.price;
-    course.totalStudentsEnrolled += 1;
-    await course.save();
+
     await user.save();
+    await course.save();
     await creator.save();
 
     return res.status(201).json({
