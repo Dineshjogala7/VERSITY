@@ -1,6 +1,7 @@
 const express = require('express')
 const uploadMultiple = require('../Middlewares/courseUploads');
-const {addCourse , deleteCourse} = require('../Controllers/Course')
+const {addCourse , deleteCourse , getCourse , getUserCourses} = require('../Controllers/Course');
+
 const router = express.Router();
 
 
@@ -16,4 +17,7 @@ router.post("/addcourse",uploadMultiple.fields([
 //router for the deleting the course by user
 router.delete("/deletecourse",deleteCourse)
 
+router.get("/coursedetails/:search",getCourse);
+
+router.get("/getusercourse",getUserCourses)
 module.exports = router
