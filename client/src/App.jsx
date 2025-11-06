@@ -14,6 +14,7 @@ import { useAuth } from "./AuthContext/AuthContext"
 import Dashboard from "./utils/Dashboard"
 import AddCourse from "./utils/AddCourse"
 import FAQSection from "./utils/FAQSection"
+import Quiz from "./utils/Quiz"
 
 const App = () => {
   const token = localStorage.getItem("token")
@@ -268,6 +269,7 @@ const App = () => {
           <Route path="/enrolled" element={<ProtectedRoute><Enrolled /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/addcourse" element={<ProtectedRoute><AddCourse /></ProtectedRoute>} />
+          <Route path="/quiz" element ={<ProtectedRoute><Quiz/></ProtectedRoute>}/>
         </Routes>
         <FAQSection />
       </main>

@@ -64,6 +64,7 @@ const Profile = () => {
             Your Account • Your Journey
           </p>
           <div className="w-32 h-1 bg-yellow-400 mt-4"></div>
+          <button onClick={()=>navigate('/quiz')}  className="absolute bottom-2 right-2 bg-yellow-400 text-black p-2 hover:bg-yellow-300 transition-colors font-mono font-bold">Take Mock Quizz</button>
         </div>
 
         {/* Profile Header Card */}
