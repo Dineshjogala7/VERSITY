@@ -243,7 +243,7 @@ Application will open at `http://localhost:5173`
    - **Output Directory:** `dist`
 3. **Add Environment Variable:**
    ```
-   VITE_API_URL=https://your-backend-url.onrender.com/api
+   VITE_API_URL=[https://your-backend-url.onrender.com/api](https://versity-backend.onrender.com)
    ```
 4. **Deploy** your application
 
