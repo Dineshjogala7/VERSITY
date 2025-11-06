@@ -39,7 +39,7 @@ const signup = async (req, res) => {
             profileImage: req.file.path,           
             profileImagePublicId: req.file.filename
         });
-
+        const token = jwt.sign({id:newUser._id,email:newUser.email},process.env.JSON_SECRET_KEY);
         await newUser.save();
 
         
@@ -48,7 +48,8 @@ const signup = async (req, res) => {
 
         res.status(201).json({
             message: "User created successfully",
-            user: userResponse
+            user: userResponse,
+            token
         });
 
     } catch (error) {
